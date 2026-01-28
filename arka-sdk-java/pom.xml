@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.pact</groupId>
-    <artifactId>pact-sdk</artifactId>
+    <groupId>com.arka</groupId>
+    <artifactId>arka-sdk-java</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
-    <name>PACT SDK</name>
-    <description>Java SDK for building PACT Protocol domain plugins</description>
-    <url>https://github.com/pact-engine/pact-sdk-java</url>
+    <name>Arka PACT SDK for Java</name>
+    <description>Java SDK for building PACT Protocol domain plugins with Arka</description>
+    <url>https://github.com/arka-protocol/arka-sdk-java</url>
 
     <licenses>
         <license>
@@ -22,10 +22,10 @@
 
     <developers>
         <developer>
-            <name>PACT Team</name>
-            <email>team@pact-protocol.org</email>
-            <organization>PACT</organization>
-            <organizationUrl>https://pact-protocol.org</organizationUrl>
+            <name>Arka Protocol Team</name>
+            <email>team@arkaprotocol.com</email>
+            <organization>Arka Protocol</organization>
+            <organizationUrl>https://www.arkaprotocol.com</organizationUrl>
         </developer>
     </developers>
 
@@ -81,6 +81,30 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>5.8.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.8.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.12.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

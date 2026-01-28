@@ -25,37 +25,37 @@ func (b *ConditionBuilder) Field(path string) *ConditionBuilder {
 }
 
 // Eq creates an equality comparison.
-func (b *ConditionBuilder) Eq(value any) *ConditionBuilder {
+func (b *ConditionBuilder) Eq(value interface{}) *ConditionBuilder {
 	b.condition = CompareCondition{Field: b.field, Operator: "eq", Value: value}
 	return b
 }
 
 // Ne creates a not-equal comparison.
-func (b *ConditionBuilder) Ne(value any) *ConditionBuilder {
+func (b *ConditionBuilder) Ne(value interface{}) *ConditionBuilder {
 	b.condition = CompareCondition{Field: b.field, Operator: "ne", Value: value}
 	return b
 }
 
 // Gt creates a greater-than comparison.
-func (b *ConditionBuilder) Gt(value any) *ConditionBuilder {
+func (b *ConditionBuilder) Gt(value interface{}) *ConditionBuilder {
 	b.condition = CompareCondition{Field: b.field, Operator: "gt", Value: value}
 	return b
 }
 
 // Gte creates a greater-than-or-equal comparison.
-func (b *ConditionBuilder) Gte(value any) *ConditionBuilder {
+func (b *ConditionBuilder) Gte(value interface{}) *ConditionBuilder {
 	b.condition = CompareCondition{Field: b.field, Operator: "gte", Value: value}
 	return b
 }
 
 // Lt creates a less-than comparison.
-func (b *ConditionBuilder) Lt(value any) *ConditionBuilder {
+func (b *ConditionBuilder) Lt(value interface{}) *ConditionBuilder {
 	b.condition = CompareCondition{Field: b.field, Operator: "lt", Value: value}
 	return b
 }
 
 // Lte creates a less-than-or-equal comparison.
-func (b *ConditionBuilder) Lte(value any) *ConditionBuilder {
+func (b *ConditionBuilder) Lte(value interface{}) *ConditionBuilder {
 	b.condition = CompareCondition{Field: b.field, Operator: "lte", Value: value}
 	return b
 }
@@ -91,7 +91,7 @@ func (b *ConditionBuilder) Exists() *ConditionBuilder {
 }
 
 // In creates a value-in-set condition.
-func (b *ConditionBuilder) In(values ...any) *ConditionBuilder {
+func (b *ConditionBuilder) In(values ...interface{}) *ConditionBuilder {
 	b.condition = InCondition{Field: b.field, Values: values}
 	return b
 }
@@ -149,7 +149,7 @@ type RuleBuilder struct {
 	tags          []string
 	effectiveFrom *time.Time
 	effectiveTo   *time.Time
-	metadata      map[string]any
+	metadata      map[string]interface{}
 }
 
 // NewRule creates a new RuleBuilder.
@@ -157,7 +157,7 @@ func NewRule() *RuleBuilder {
 	return &RuleBuilder{
 		severity: SeverityMedium,
 		tags:     []string{},
-		metadata: make(map[string]any),
+		metadata: make(map[string]interface{}),
 	}
 }
 
@@ -198,7 +198,7 @@ func (b *RuleBuilder) When(condition Condition) *RuleBuilder {
 }
 
 // WhenField sets a simple field comparison condition.
-func (b *RuleBuilder) WhenField(field, operator string, value any) *RuleBuilder {
+func (b *RuleBuilder) WhenField(field, operator string, value interface{}) *RuleBuilder {
 	b.condition = CompareCondition{Field: field, Operator: operator, Value: value}
 	return b
 }
@@ -240,7 +240,7 @@ func (b *RuleBuilder) EffectiveTo(t time.Time) *RuleBuilder {
 }
 
 // Metadata adds metadata to the rule.
-func (b *RuleBuilder) Metadata(key string, value any) *RuleBuilder {
+func (b *RuleBuilder) Metadata(key string, value interface{}) *RuleBuilder {
 	b.metadata[key] = value
 	return b
 }

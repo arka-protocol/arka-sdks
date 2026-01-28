@@ -80,17 +80,17 @@ type PluginManifest struct {
 	EventTypes      []string          `json:"event_types"`
 	Dependencies    []string          `json:"dependencies,omitempty"`
 	PactCoreVersion string            `json:"pact_core_version"`
-	ConfigSchema    map[string]any    `json:"config_schema,omitempty"`
+	ConfigSchema    map[string]interface{}    `json:"config_schema,omitempty"`
 }
 
 // DomainEvent represents a domain-specific event before conversion.
 type DomainEvent struct {
 	Type         string         `json:"type"`
-	Payload      map[string]any `json:"payload"`
+	Payload      map[string]interface{} `json:"payload"`
 	EntityID     string         `json:"entity_id,omitempty"`
 	Jurisdiction string         `json:"jurisdiction,omitempty"`
 	OccurredAt   *time.Time     `json:"occurred_at,omitempty"`
-	Metadata     map[string]any `json:"metadata,omitempty"`
+	Metadata     map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // PactEvent represents a canonical PACT event.
@@ -101,28 +101,28 @@ type PactEvent struct {
 	EntityID     string         `json:"entity_id,omitempty"`
 	EntityType   string         `json:"entity_type,omitempty"`
 	Jurisdiction string         `json:"jurisdiction,omitempty"`
-	Payload      map[string]any `json:"payload"`
+	Payload      map[string]interface{} `json:"payload"`
 	OccurredAt   time.Time      `json:"occurred_at"`
 	ReceivedAt   time.Time      `json:"received_at"`
-	Metadata     map[string]any `json:"metadata,omitempty"`
+	Metadata     map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // PactEntity represents a PACT entity.
 type PactEntity struct {
 	ID           string         `json:"id"`
 	Type         string         `json:"type"`
-	Data         map[string]any `json:"data"`
+	Data         map[string]interface{} `json:"data"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	Jurisdiction string         `json:"jurisdiction,omitempty"`
-	Metadata     map[string]any `json:"metadata,omitempty"`
+	Metadata     map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // PactEntityType defines an entity type with schema.
 type PactEntityType struct {
 	Name           string         `json:"name"`
 	Description    string         `json:"description"`
-	Schema         map[string]any `json:"schema"`
+	Schema         map[string]interface{} `json:"schema"`
 	RequiredFields []string       `json:"required_fields,omitempty"`
 }
 
@@ -137,7 +137,7 @@ type CompareCondition struct {
 	Type     string `json:"type"`
 	Field    string `json:"field"`
 	Operator string `json:"operator"`
-	Value    any    `json:"value"`
+	Value    interface{}    `json:"value"`
 }
 
 func (c CompareCondition) conditionMarker() {}
@@ -161,7 +161,7 @@ type AndCondition struct {
 func (c AndCondition) conditionMarker() {}
 
 func (c AndCondition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
+	return json.Marshal(map[string]interface{}{
 		"type":       "and",
 		"conditions": c.Conditions,
 	})
@@ -175,7 +175,7 @@ type OrCondition struct {
 func (c OrCondition) conditionMarker() {}
 
 func (c OrCondition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
+	return json.Marshal(map[string]interface{}{
 		"type":       "or",
 		"conditions": c.Conditions,
 	})
@@ -189,7 +189,7 @@ type NotCondition struct {
 func (c NotCondition) conditionMarker() {}
 
 func (c NotCondition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
+	return json.Marshal(map[string]interface{}{
 		"type":      "not",
 		"condition": c.Condition,
 	})
@@ -203,7 +203,7 @@ type ExistsCondition struct {
 func (c ExistsCondition) conditionMarker() {}
 
 func (c ExistsCondition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
+	return json.Marshal(map[string]interface{}{
 		"type":  "exists",
 		"field": c.Field,
 	})
@@ -212,13 +212,13 @@ func (c ExistsCondition) MarshalJSON() ([]byte, error) {
 // InCondition checks if a value is in a set.
 type InCondition struct {
 	Field  string `json:"field"`
-	Values []any  `json:"values"`
+	Values []interface{}  `json:"values"`
 }
 
 func (c InCondition) conditionMarker() {}
 
 func (c InCondition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
+	return json.Marshal(map[string]interface{}{
 		"type":   "in",
 		"field":  c.Field,
 		"values": c.Values,
@@ -237,7 +237,7 @@ type RangeCondition struct {
 func (c RangeCondition) conditionMarker() {}
 
 func (c RangeCondition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
+	return json.Marshal(map[string]interface{}{
 		"type":          "range",
 		"field":         c.Field,
 		"min":           c.Min,
@@ -256,7 +256,7 @@ type ExpressionCondition struct {
 func (c ExpressionCondition) conditionMarker() {}
 
 func (c ExpressionCondition) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
+	return json.Marshal(map[string]interface{}{
 		"type":       "expression",
 		"expression": c.Expression,
 		"language":   c.Language,
@@ -268,7 +268,7 @@ type Consequence struct {
 	Decision Decision       `json:"decision"`
 	Code     string         `json:"code"`
 	Message  string         `json:"message"`
-	Metadata map[string]any `json:"metadata,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // PactRule represents a PACT rule.
@@ -283,7 +283,7 @@ type PactRule struct {
 	Tags          []string       `json:"tags,omitempty"`
 	EffectiveFrom *time.Time     `json:"effective_from,omitempty"`
 	EffectiveTo   *time.Time     `json:"effective_to,omitempty"`
-	Metadata      map[string]any `json:"metadata,omitempty"`
+	Metadata      map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // RuleEvaluation represents the result of evaluating a rule.
@@ -303,7 +303,7 @@ type PactDecision struct {
 	Status          DecisionStatus   `json:"status"`
 	RuleEvaluations []RuleEvaluation `json:"rule_evaluations"`
 	CreatedAt       time.Time        `json:"created_at"`
-	Metadata        map[string]any   `json:"metadata,omitempty"`
+	Metadata        map[string]interface{}   `json:"metadata,omitempty"`
 }
 
 // ValidationError represents a validation error.

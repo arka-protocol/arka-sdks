@@ -19,7 +19,7 @@ type PluginRegistration struct {
 type RegistryEvent struct {
 	Type     string
 	PluginID string
-	Data     map[string]any
+	Data     map[string]interface{}
 }
 
 // RegistryEventHandler handles registry events.
@@ -98,7 +98,7 @@ func (r *Registry) Register(ctx context.Context, plugin DomainPlugin) error {
 		r.emit(RegistryEvent{
 			Type:     "entity_type:registered",
 			PluginID: manifest.ID,
-			Data:     map[string]any{"entity_type": entityType},
+			Data:     map[string]interface{}{"entity_type": entityType},
 		})
 	}
 
@@ -110,7 +110,7 @@ func (r *Registry) Register(ctx context.Context, plugin DomainPlugin) error {
 	r.emit(RegistryEvent{
 		Type:     "plugin:registered",
 		PluginID: manifest.ID,
-		Data:     map[string]any{"manifest": manifest},
+		Data:     map[string]interface{}{"manifest": manifest},
 	})
 
 	return nil
@@ -281,7 +281,7 @@ func (r *Registry) emit(event RegistryEvent) {
 }
 
 // Stats returns registry statistics.
-func (r *Registry) Stats() map[string]any {
+func (r *Registry) Stats() map[string]interface{} {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -292,7 +292,7 @@ func (r *Registry) Stats() map[string]any {
 		}
 	}
 
-	return map[string]any{
+	return map[string]interface{}{
 		"plugin_count":      len(r.plugins),
 		"entity_type_count": len(r.entityTypeToPlugin),
 		"event_type_count":  len(r.eventTypeToPlugin),

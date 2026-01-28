@@ -61,7 +61,7 @@ func NewClient(baseURL string, opts ...ClientOption) *Client {
 }
 
 // request performs an HTTP request.
-func (c *Client) request(ctx context.Context, method, path string, body any) (*http.Response, error) {
+func (c *Client) request(ctx context.Context, method, path string, body interface{}) (*http.Response, error) {
 	var bodyReader io.Reader
 	if body != nil {
 		jsonBody, err := json.Marshal(body)
@@ -91,7 +91,7 @@ func (c *Client) request(ctx context.Context, method, path string, body any) (*h
 }
 
 // parseResponse parses an HTTP response into the target.
-func (c *Client) parseResponse(resp *http.Response, target any) error {
+func (c *Client) parseResponse(resp *http.Response, target interface{}) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
@@ -205,8 +205,8 @@ func (c *Client) GetEntity(ctx context.Context, entityID string) (*PactEntity, e
 }
 
 // UpdateEntity updates an entity.
-func (c *Client) UpdateEntity(ctx context.Context, entityID string, data map[string]any) (*PactEntity, error) {
-	resp, err := c.request(ctx, http.MethodPatch, "/api/v1/entities/"+entityID, map[string]any{"data": data})
+func (c *Client) UpdateEntity(ctx context.Context, entityID string, data map[string]interface{}) (*PactEntity, error) {
+	resp, err := c.request(ctx, http.MethodPatch, "/api/v1/entities/"+entityID, map[string]interface{}{"data": data})
 	if err != nil {
 		return nil, err
 	}
@@ -293,8 +293,8 @@ func (c *Client) GetDecision(ctx context.Context, decisionID string) (*PactDecis
 }
 
 // Validate validates data against an entity type schema.
-func (c *Client) Validate(ctx context.Context, entityType string, data map[string]any) (*ValidationResult, error) {
-	resp, err := c.request(ctx, http.MethodPost, "/api/v1/validate", map[string]any{
+func (c *Client) Validate(ctx context.Context, entityType string, data map[string]interface{}) (*ValidationResult, error) {
+	resp, err := c.request(ctx, http.MethodPost, "/api/v1/validate", map[string]interface{}{
 		"entity_type": entityType,
 		"data":        data,
 	})
@@ -310,13 +310,13 @@ func (c *Client) Validate(ctx context.Context, entityType string, data map[strin
 }
 
 // Health checks service health.
-func (c *Client) Health(ctx context.Context) (map[string]any, error) {
+func (c *Client) Health(ctx context.Context) (map[string]interface{}, error) {
 	resp, err := c.request(ctx, http.MethodGet, "/health", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var result map[string]any
+	var result map[string]interface{}
 	if err := c.parseResponse(resp, &result); err != nil {
 		return nil, err
 	}

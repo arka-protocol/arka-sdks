@@ -47,16 +47,16 @@ type DomainPlugin interface {
 	MapToCanonicalEvent(event DomainEvent) (*PactEvent, error)
 
 	// ValidateDomainData validates domain-specific data.
-	ValidateDomainData(entityType string, data map[string]any) ValidationResult
+	ValidateDomainData(entityType string, data map[string]interface{}) ValidationResult
 
 	// GetEvaluationContext returns context for rule evaluation.
-	GetEvaluationContext(event *PactEvent, entity *PactEntity) map[string]any
+	GetEvaluationContext(event *PactEvent, entity *PactEntity) map[string]interface{}
 
 	// SerializeForChain serializes data for blockchain.
-	SerializeForChain(data any) ([]byte, error)
+	SerializeForChain(data interface{}) ([]byte, error)
 
 	// DeserializeFromChain deserializes data from blockchain.
-	DeserializeFromChain(data []byte) (any, error)
+	DeserializeFromChain(data []byte) (interface{}, error)
 }
 
 // BasePlugin provides a base implementation of DomainPlugin.
@@ -138,7 +138,7 @@ func (p *BasePlugin) inferEntityType(event DomainEvent) string {
 }
 
 // ValidateDomainData validates domain-specific data.
-func (p *BasePlugin) ValidateDomainData(entityType string, data map[string]any) ValidationResult {
+func (p *BasePlugin) ValidateDomainData(entityType string, data map[string]interface{}) ValidationResult {
 	// Find the entity type
 	var entityTypeDef *PactEntityType
 	for _, et := range p.entityTypes {
@@ -178,18 +178,18 @@ func (p *BasePlugin) ValidateDomainData(entityType string, data map[string]any) 
 }
 
 // GetEvaluationContext returns context for rule evaluation.
-func (p *BasePlugin) GetEvaluationContext(event *PactEvent, entity *PactEntity) map[string]any {
-	return make(map[string]any)
+func (p *BasePlugin) GetEvaluationContext(event *PactEvent, entity *PactEntity) map[string]interface{} {
+	return make(map[string]interface{})
 }
 
 // SerializeForChain serializes data for blockchain.
-func (p *BasePlugin) SerializeForChain(data any) ([]byte, error) {
+func (p *BasePlugin) SerializeForChain(data interface{}) ([]byte, error) {
 	return canonicalJSON(data)
 }
 
 // DeserializeFromChain deserializes data from blockchain.
-func (p *BasePlugin) DeserializeFromChain(data []byte) (any, error) {
-	var result any
+func (p *BasePlugin) DeserializeFromChain(data []byte) (interface{}, error) {
+	var result interface{}
 	err := json.Unmarshal(data, &result)
 	return result, err
 }
@@ -214,7 +214,7 @@ func (p *BasePlugin) CreateRule(
 		Condition:   condition,
 		Consequence: consequence,
 		Tags:        []string{p.manifest.ID},
-		Metadata: map[string]any{
+		Metadata: map[string]interface{}{
 			"plugin_id":      p.manifest.ID,
 			"plugin_version": p.manifest.Version,
 		},
@@ -259,17 +259,17 @@ func WithTags(tags ...string) RuleOption {
 }
 
 // WithMetadata adds metadata to the rule.
-func WithMetadata(key string, value any) RuleOption {
+func WithMetadata(key string, value interface{}) RuleOption {
 	return func(r *PactRule) {
 		if r.Metadata == nil {
-			r.Metadata = make(map[string]any)
+			r.Metadata = make(map[string]interface{})
 		}
 		r.Metadata[key] = value
 	}
 }
 
 // canonicalJSON produces canonical JSON with sorted keys.
-func canonicalJSON(data any) ([]byte, error) {
+func canonicalJSON(data interface{}) ([]byte, error) {
 	// First marshal to JSON
 	b, err := json.Marshal(data)
 	if err != nil {
@@ -277,7 +277,7 @@ func canonicalJSON(data any) ([]byte, error) {
 	}
 
 	// Unmarshal to get consistent representation
-	var v any
+	var v interface{}
 	if err := json.Unmarshal(b, &v); err != nil {
 		return nil, err
 	}
@@ -286,9 +286,9 @@ func canonicalJSON(data any) ([]byte, error) {
 	return marshalSorted(v)
 }
 
-func marshalSorted(v any) ([]byte, error) {
+func marshalSorted(v interface{}) ([]byte, error) {
 	switch val := v.(type) {
-	case map[string]any:
+	case map[string]interface{}:
 		// Get sorted keys
 		keys := make([]string, 0, len(val))
 		for k := range val {
@@ -312,7 +312,7 @@ func marshalSorted(v any) ([]byte, error) {
 		result += "}"
 		return []byte(result), nil
 
-	case []any:
+	case []interface{}:
 		result := "["
 		for i, item := range val {
 			if i > 0 {
