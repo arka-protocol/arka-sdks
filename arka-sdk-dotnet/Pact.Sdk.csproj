@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+
+    <!-- NuGet Package Info -->
+    <PackageId>Pact.Sdk</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>PACT Team</Authors>
+    <Company>PACT Protocol</Company>
+    <Description>.NET SDK for building PACT Protocol domain plugins</Description>
+    <PackageTags>pact;compliance;regulatory;plugin;sdk</PackageTags>
+    <PackageProjectUrl>https://github.com/pact-engine/pact-sdk-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/pact-engine/pact-sdk-dotnet</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,317 @@
+// PACT Protocol Definitions
+// Shared type definitions for all PACT SDKs
+
+syntax = "proto3";
+
+package pact;
+
+option java_package = "com.pact.sdk.proto";
+option java_multiple_files = true;
+option go_package = "github.com/pact-engine/pact-sdk-go/pact/proto";
+option csharp_namespace = "Pact.Sdk.Proto";
+
+// ============================================================================
+// Core Types
+// ============================================================================
+
+// Plugin manifest describing capabilities
+message PluginManifest {
+  string id = 1;
+  string name = 2;
+  string version = 3;
+  string author = 4;
+  string description = 5;
+  repeated string entity_types = 6;
+  repeated string event_types = 7;
+  repeated string dependencies = 8;
+  string pact_core_version = 9;
+  map<string, string> config_schema = 10;
+}
+
+// Domain-specific event before conversion to canonical format
+message DomainEvent {
+  string type = 1;
+  bytes payload = 2;  // JSON-encoded payload
+  string entity_id = 3;
+  string jurisdiction = 4;
+  string occurred_at = 5;
+  map<string, string> metadata = 6;
+}
+
+// Canonical PACT event format
+message PactEvent {
+  string id = 1;
+  string source = 2;
+  string type = 3;
+  string entity_id = 4;
+  string entity_type = 5;
+  string jurisdiction = 6;
+  bytes payload = 7;  // JSON-encoded payload
+  string occurred_at = 8;
+  string received_at = 9;
+  map<string, string> metadata = 10;
+}
+
+// PACT entity
+message PactEntity {
+  string id = 1;
+  string type = 2;
+  bytes data = 3;  // JSON-encoded data
+  string created_at = 4;
+  string updated_at = 5;
+  string jurisdiction = 6;
+  map<string, string> metadata = 7;
+}
+
+// Entity type definition
+message PactEntityType {
+  string name = 1;
+  string description = 2;
+  bytes schema = 3;  // JSON Schema
+  repeated string required_fields = 4;
+}
+
+// ============================================================================
+// Rule Types
+// ============================================================================
+
+// PACT rule definition
+message PactRule {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string jurisdiction = 4;
+  Severity severity = 5;
+  PactCondition condition = 6;
+  PactConsequence consequence = 7;
+  repeated string tags = 8;
+  string effective_from = 9;
+  string effective_to = 10;
+  map<string, string> metadata = 11;
+}
+
+enum Severity {
+  SEVERITY_UNSPECIFIED = 0;
+  SEVERITY_LOW = 1;
+  SEVERITY_MEDIUM = 2;
+  SEVERITY_HIGH = 3;
+  SEVERITY_CRITICAL = 4;
+}
+
+// Condition types
+message PactCondition {
+  oneof condition_type {
+    CompareCondition compare = 1;
+    AndCondition and = 2;
+    OrCondition or = 3;
+    NotCondition not = 4;
+    ExistsCondition exists = 5;
+    InCondition in = 6;
+    RangeCondition range = 7;
+    ExpressionCondition expression = 8;
+  }
+}
+
+message CompareCondition {
+  string field = 1;
+  string operator = 2;  // eq, ne, gt, gte, lt, lte, contains, startsWith, endsWith, regex
+  bytes value = 3;  // JSON-encoded value
+}
+
+message AndCondition {
+  repeated PactCondition conditions = 1;
+}
+
+message OrCondition {
+  repeated PactCondition conditions = 1;
+}
+
+message NotCondition {
+  PactCondition condition = 1;
+}
+
+message ExistsCondition {
+  string field = 1;
+}
+
+message InCondition {
+  string field = 1;
+  repeated bytes values = 2;  // JSON-encoded values
+}
+
+message RangeCondition {
+  string field = 1;
+  bytes min = 2;
+  bytes max = 3;
+  bool min_inclusive = 4;
+  bool max_inclusive = 5;
+}
+
+message ExpressionCondition {
+  string expression = 1;  // CEL or custom expression
+  string language = 2;
+}
+
+// Consequence of rule evaluation
+message PactConsequence {
+  Decision decision = 1;
+  string code = 2;
+  string message = 3;
+  map<string, string> metadata = 4;
+}
+
+enum Decision {
+  DECISION_UNSPECIFIED = 0;
+  DECISION_ALLOW = 1;
+  DECISION_DENY = 2;
+  DECISION_FLAG = 3;
+}
+
+// ============================================================================
+// Decision Types
+// ============================================================================
+
+message PactDecision {
+  string id = 1;
+  string event_id = 2;
+  DecisionStatus status = 3;
+  repeated RuleEvaluation rule_evaluations = 4;
+  string created_at = 5;
+  map<string, string> metadata = 6;
+}
+
+enum DecisionStatus {
+  DECISION_STATUS_UNSPECIFIED = 0;
+  DECISION_STATUS_ALLOW = 1;
+  DECISION_STATUS_ALLOW_WITH_FLAGS = 2;
+  DECISION_STATUS_DENY = 3;
+}
+
+message RuleEvaluation {
+  string rule_id = 1;
+  string rule_name = 2;
+  EvaluationResult result = 3;
+  string code = 4;
+  string message = 5;
+  int64 duration_ms = 6;
+}
+
+enum EvaluationResult {
+  EVALUATION_RESULT_UNSPECIFIED = 0;
+  EVALUATION_RESULT_PASS = 1;
+  EVALUATION_RESULT_FAIL = 2;
+  EVALUATION_RESULT_SKIP = 3;
+  EVALUATION_RESULT_ERROR = 4;
+}
+
+// ============================================================================
+// Validation Types
+// ============================================================================
+
+message ValidationResult {
+  bool valid = 1;
+  repeated ValidationError errors = 2;
+  repeated ValidationWarning warnings = 3;
+}
+
+message ValidationError {
+  string field = 1;
+  string message = 2;
+  string code = 3;
+}
+
+message ValidationWarning {
+  string field = 1;
+  string message = 2;
+}
+
+// ============================================================================
+// Plugin Service
+// ============================================================================
+
+service PluginService {
+  // Plugin lifecycle
+  rpc Initialize(InitializeRequest) returns (InitializeResponse);
+  rpc Shutdown(ShutdownRequest) returns (ShutdownResponse);
+
+  // Event processing
+  rpc MapToCanonicalEvent(MapEventRequest) returns (MapEventResponse);
+  rpc ValidateDomainData(ValidateRequest) returns (ValidationResult);
+
+  // Rule management
+  rpc GetEntityTypes(GetEntityTypesRequest) returns (GetEntityTypesResponse);
+  rpc GetDefaultRules(GetDefaultRulesRequest) returns (GetDefaultRulesResponse);
+
+  // Context
+  rpc GetEvaluationContext(GetContextRequest) returns (GetContextResponse);
+
+  // Serialization
+  rpc SerializeForChain(SerializeRequest) returns (SerializeResponse);
+  rpc DeserializeFromChain(DeserializeRequest) returns (DeserializeResponse);
+}
+
+message InitializeRequest {
+  map<string, string> config = 1;
+}
+
+message InitializeResponse {
+  PluginManifest manifest = 1;
+  bool success = 2;
+  string error = 3;
+}
+
+message ShutdownRequest {}
+
+message ShutdownResponse {
+  bool success = 1;
+}
+
+message MapEventRequest {
+  DomainEvent domain_event = 1;
+}
+
+message MapEventResponse {
+  PactEvent pact_event = 1;
+}
+
+message ValidateRequest {
+  string entity_type = 1;
+  bytes data = 2;  // JSON-encoded data
+}
+
+message GetEntityTypesRequest {}
+
+message GetEntityTypesResponse {
+  repeated PactEntityType entity_types = 1;
+}
+
+message GetDefaultRulesRequest {}
+
+message GetDefaultRulesResponse {
+  repeated PactRule rules = 1;
+}
+
+message GetContextRequest {
+  PactEvent event = 1;
+  PactEntity entity = 2;
+}
+
+message GetContextResponse {
+  bytes context = 1;  // JSON-encoded context
+}
+
+message SerializeRequest {
+  bytes data = 1;
+}
+
+message SerializeResponse {
+  bytes serialized = 1;
+}
+
+message DeserializeRequest {
+  bytes serialized = 1;
+}
+
+message DeserializeResponse {
+  bytes data = 1;
+}
