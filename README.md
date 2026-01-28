@@ -8,7 +8,7 @@ Multi-language SDKs for building ARKA Protocol domain plugins.
 |----------|---------|--------|
 | TypeScript | `@arka/plugin-sdk` | Production |
 | Python | `arka-sdk` | Beta |
-| Go | `github.com/arka-engine/arka-sdk-go` | Beta |
+| Go | `github.com/arka-protocol/arka-sdks/arka-sdk-go` | Beta |
 | Rust | `arka-sdk` | Beta |
 | Java | `com.arka:arka-sdk` | Beta |
 | .NET | `Pact.Sdk` | Beta |
@@ -84,7 +84,7 @@ class MyPlugin(BaseArkaPlugin):
 ### Go
 
 ```go
-import "github.com/arka-engine/arka-sdk-go/pact"
+import "github.com/arka-protocol/arka-sdks/arka-sdk-go/arka"
 
 plugin := pact.NewBasePlugin(
     pact.PluginManifest{
@@ -186,6 +186,16 @@ sdk/
 └── client/         # HTTP/gRPC client
 ```
 
+## Documentation
+
+- [SDK Documentation](https://www.arkaprotocol.com/docs/1.0.0/sdks) - Complete SDK guides
+- [API Reference](https://www.arkaprotocol.com/docs/1.0.0/api) - API documentation
+- [Plugin Development](https://www.arkaprotocol.com/docs/1.0.0/plugins) - Building plugins
+
 ## License
 
-MIT
+Apache 2.0 - see [LICENSE](LICENSE) for details.
+
+---
+
+Built with ❤️ by [ARKA Protocol](https://www.arkaprotocol.com)
